@@ -1,0 +1,13 @@
+optimizer: CD
+stopcondition {
+  all_processed: false
+  steps: 100000
+}
+train: true
+batchsize: 5
+data_proto: "./simtb_data.pbtxt"
+eval_after: 50000
+checkpoint_after: 100000
+checkpoint_directory: "./output/rbm_models"
+randomize: true
+show_after: 1000
