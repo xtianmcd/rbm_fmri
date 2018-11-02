@@ -24,7 +24,7 @@ demixer = np.transpose(W)
 
 timecourses = np.matmul(demixer, np.transpose(X))
 
-#print(timecourses.shape)
+print("reconstructed timecourses have shape: {}".format(timecourses.shape))
 
 corrs = {}
 sm=0
@@ -45,17 +45,18 @@ for spatial_map_tc in timecourses:
     #sns.heatmap(cm)
     #plt.show()
     component_maps.append(cm)
-
+print(np.asarray(component_maps).shape)
+    
 with open('rbm_component_maps.csv', 'w') as mapscsv:
-    mapswriter = csv.writer(mapscsv)
+    mapswriter = csv.writer(mapscsv, delimiter=',')
     for cmpnt in component_maps:
         for row in cmpnt:
             mapswriter.writerow(row)
         mapswriter.writerow('\n')
 with open('rbm_component_dict_corr{}.csv'.format(corrval), 'w') as dictcsv:
-    dictwriter = csv.writer(dictcsv)
+    dictwriter = csv.writer(dictcsv, delimiter=',')
     for pair in corrs:
-        dictwriter.writerow(pair)
+        dictwriter.writerow(list(corrs.get(pair)))
     
 #print(corrs)
 print(len(corrs))
