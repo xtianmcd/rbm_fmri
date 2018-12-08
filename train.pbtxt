@@ -1,13 +1,13 @@
 optimizer: CD
 stopcondition {
   all_processed: false
-  steps: 100000
+  steps: 58500
 }
 train: true
-batchsize: 5
+batchsize: 10
 data_proto: "./simtb_data.pbtxt"
-eval_after: 50000
-checkpoint_after: 100000
-checkpoint_directory: "./output/rbm_models"
-randomize: true
-show_after: 1000
+eval_after: 500
+checkpoint_after: 58500
+checkpoint_directory: "./output_masked_stdz_181127/wn20/rbm_models"
+randomize: false
+show_after: 2500

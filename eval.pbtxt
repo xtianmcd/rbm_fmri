@@ -1,4 +1,4 @@
 stopcondition {
   all_processed: true
 }
-batchsize: 5
+batchsize: 10
