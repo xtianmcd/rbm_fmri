@@ -1,9 +1,0 @@
-name: "rbm"
-data {
-  name: "simtbData"
-  file_pattern: "./simtb_full.npy"
-  size: 8000
-  dimensions: 16384
-}
-main_memory: "20G"
-gpu_memory:"3G"
