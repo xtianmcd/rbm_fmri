@@ -19,7 +19,7 @@ def objective(params):
     model.write(f\
     "name: 'simtb_rbm_layer1',\n\
     model_type: DBM,\n\
-    hyperparams {\n\
+    hyperparams \{\n\
         \tbase_epsilon: {params['base_epsilon']}\n\
         \tepsilon_decay : {params['epsilon_choice']['epsilon_decay']}\n\
         \tepsilon_decay_half_life : {params['epsilon_choice']['epsilon_decay_half_life']}\n\
@@ -33,15 +33,15 @@ def objective(params):
         \tweight_norm : {params['wt_norm_choice']['weight_norm']}\n\
         \tapply_l2_decay: {params['l2_decay_choice']['apply_l2_decay']}\n\
         \tl2_decay: {params['l2_decay_choice']['l2_decay']}\n\
-        \tapply_l1_decay: {params['l1_decay_choice']['apply_l1_decay'],}\n\
+        \tapply_l1_decay: {params['l1_decay_choice']['apply_l1_decay']}\n\
         \tl1_decay: {params['l2_decay_choice']['l1_decay']}\n\
         \tactivation: TANH\n\
         \tgibbs_steps: {params['gibbs_steps']}\n\
         \tstart_step_up_cd_after: {params['start_step_up_cd_after']}\n\
         \tstep_up_cd_after:{params['step_up_cd_after']}\n\
-    }\n\
+    \}\n\
     \n\
-    layer {\n\
+    layer \{\n\
         \tname: 'input_layer'\n\
         \tdimensions: 16384\n\
         \tis_input: true\n\
@@ -49,52 +49,54 @@ def objective(params):
             \t\tname: 'bias'\n\
             \t\tinitialization: {params['vis_bias_init_choice']['vis_bias_init']}\n\
             \t\tconstant: {params['vis_bias_init_choice']['vis_bias_cnst']}\n\
-        \t}\n\
-        \tdata_field {\n\
+            \t\tsigma: {params['vis_bias_init_choice']['vis_bias_sigma']}\n\
+        \t\}\n\
+        \tdata_field \{\n\
             \t\ttrain: {params['train_data']}\n\
-        \t}\n\
+        \t\}\n\
         \tloss_function: SQUARED_LOSS\n\
-        \thyperparams {\n\
+        \thyperparams \{\n\
             \t\tsparsity : false\n\
             \t\tactivation: TANH\n\n\
             \t\tapply_l2_decay: {params['vis_apply_l2_decay']}\n\
             \t\tapply_l1_decay: {params['vis_apply_l1_decay']}\n\
-        \t}\n\
-        \tperformance_stats {\n\
+        \t\}\n\
+        \tperformance_stats \{\n\
             \t\tcompute_error: true\n\
-        \t}\n\
-    }\n\
+        \t\}\n\
+    \}\n\
     \n\
-    layer {\n\
+    layer \{\n\
         \tname: 'hidden1'\n\
         \tdimensions: {params['hidden_dims']}\n\
-        \tparam {\n\
+        \tparam \{\n\
             \t\tname: 'bias'\n\
             \t\tinitialization: {params['hidden_bias_init_choice']['hidden_bias_init']}\n\
             \t\tconstant: {params['hidden_bias_init_choice']['hidden_bias_cnst']}\n\
-        \t}\n\
-        \tperformance_stats {\n\
+            \t\tsigma: {params['hidden_bias_init_choice']['hidd_bias_sigma']}\n\
+        \t\}\n\
+        \tperformance_stats \{\n\
             \t\tcompute_sparsity: true\n\
-        \t}\n\
-        \thyperparams {\n\
+        \t\}\n\
+        \thyperparams \{\n\
             \t\tactivation: TANH\n\
             \t\tapply_l2_decay: {params['hidd_apply_l2_decay']}\n\
             \t\tsparsity: false\n\
             \t\tapply_l1_decay: {params['hidd_apply_l1_decay']}\n\
-        \t}\n\
-    }\n\
+        \t\}\n\
+    \}\n\
     \n\
-    edge {\n\
+    edge \{\n\
         \tnode1: 'input_layer'\n\
         \tnode2: 'hidden1'\n\
         \tdirected: false\n\
-        \tparam {{\n\
+        \tparam \{\n\
             \t\tname: 'weight'\n\
-            \t\tinitialization: {params['wt_init_choice']['wt_init']}} \n\
+            \t\tinitialization: {params['wt_init_choice']['wt_init']} \n\
             \t\tconstant: {params['wt_init_choice'][wt_cnst]}\n\
             \t\tsigma : {params['wt_init_choice']['wt_sigma']}\n\
-        \t}\n\
-    }".format(,,,,,,,,,,,,,,,,,,,,,,,)\
+        \t\}\n\
+    \}".format(,,,,,,,,,,,,,,,,,,,,,,,)\
     )
     model.close()
 
@@ -135,30 +137,32 @@ if __name__ == '__main__':
         'final_momentum'          : hp.quniform('final_momentum',   0.0,0.9,0.1),
         'momentum_change_steps'   : hp.choice('momentum_change_steps',[50,500,1000,5000,10000,50000]},
         'dropout_choice'          : hp.choice('dropout_choice', [{'dropout' : 'true', 'dropout_prob' : hp.quniform('dropout_prob', 0.0,0.9,0.1)}, {'dropout' : 'false', 'dropout_prob' : 0}]),
-        'wt_norm_choice'          : hp.choice('wt_norm_choice' : [{'apply_weight_norm' : 'true', 'weight_norm' : hp.choice('weight_norm' : [1,3,5,10,20,50,100])},{'apply_weight_norm' : 'false', 'weight_norm' : 1}]),
-        'l2_decay_choice'         : hp.choice('l2_decay_choice' : [{'apply_l2_decay' : 'true', 'l2_decay' : hp.choice('l2_decay', 0.00001,0.0001,0.001,0.01,0.1)},{'apply_l2_decay' : 'false', 'l2_decay' : 0.01}])
-        'l1_decay_choice'         : hp.choice('l1_decay_choice' : [{'apply_l1_decay' : 'true', 'l1_decay' : hp.choice('l1_decay', 0.00001,0.0001,0.001,0.01,0.1)},{'apply_l1_decay' : 'false', 'l1_decay' : 0.01}])
-        'gibbs_steps'             : hp.choice('gibbs_steps' : [1,3,5,10,20,50]),
+        'wt_norm_choice'          : hp.choice('wt_norm_choice', [{'apply_weight_norm' : 'true', 'weight_norm' : hp.choice('weight_norm' : [1,3,5,10,20,50,100])},{'apply_weight_norm' : 'false', 'weight_norm' : 1}]),
+        'l2_decay_choice'         : hp.choice('l2_decay_choice', [{'apply_l2_decay' : 'true', 'l2_decay' : hp.choice('l2_decay', 0.00001,0.0001,0.001,0.01,0.1)},{'apply_l2_decay' : 'false', 'l2_decay' : 0.01}])
+        'l1_decay_choice'         : hp.choice('l1_decay_choice', [{'apply_l1_decay' : 'true', 'l1_decay' : hp.choice('l1_decay', 0.00001,0.0001,0.001,0.01,0.1)},{'apply_l1_decay' : 'false', 'l1_decay' : 0.01}])
+        'gibbs_steps'             : hp.choice('gibbs_steps', [1,3,5,10,20,50]),
         'start_step_up_cd_after'  : hp.choice('start_step_up_cd_after', [50,500,1000,5000,10000,50000]),
         'step_up_cd_after'        : hp.choice('step_up_cd_after', [50,500,1000,5000,10000,50000]),
         'train_data'              : train_data,
-        'vis_bias_init_choice'    : hp.choice('vis_bias_init_choice', [{'vis_bias_init' : 'DENSE_GAUSSIAN','vis_bias_cnst' : 0.01},{'vis_bias_init' : 'SPARSE_GAUSSIAN','vis_bias_cnst' : 0.01},{'vis_bias_init' : 'CONSTANT','vis_bias_cnst' : hp.choice('hidden_bias_cnst',[-4,-0.1,0,0.001,0.01,0.1]))},\
-                                                                        {'vis_bias_init' : 'DENSE_GAUSSIAN_SQRT_FAN_IN','vis_bias_cnst' : 0.01},{'vis_bias_init' : 'DENSE_UNIFORM','vis_bias_cnst' : 0.01},{'vis_bias_init' : 'DENSE_UNIFORM_SQRT_FAN_IN','vis_bias_cnst' : 0.01}]),
-        'vis_apply_l2_decay'      : hp.choice('vis_apply_l2_decay' : ['true','false']),
-        'vis_apply_l1_decay'      : hp.choice('vis_apply_l2_decay' : ['true','false']),
+        'vis_bias_init_choice'    : hp.choice('vis_bias_init_choice', [{'vis_bias_init' : 'DENSE_GAUSSIAN','vis_bias_cnst' : 0.01, 'vis_bias_sigma' : hp.choice('vis_bias_sigma', [0.001,0.01,0.1])},{'vis_bias_init' : 'SPARSE_GAUSSIAN','vis_bias_cnst' : 0.01, 'vis_bias_sigma' : hp.choice('vis_bias_sigma', [0.001,0.01,0.1])},\
+                                                                        {'vis_bias_init' : 'CONSTANT','vis_bias_cnst' : hp.choice('hidden_bias_cnst',[-4,-0.1,0,0.001,0.01,0.1]), 'vis_bias_sigma' : 0.001)},{'vis_bias_init' : 'DENSE_GAUSSIAN_SQRT_FAN_IN','vis_bias_cnst' : 0.01, 'vis_bias_sigma' : hp.choice('vis_bias_sigma', [0.001,0.01,0.1])},\
+                                                                        {'vis_bias_init' : 'DENSE_UNIFORM','vis_bias_cnst' : 0.01, 'vis_bias_sigma' : hp.choice('vis_bias_sigma', [0.001,0.01,0.1])},{'vis_bias_init' : 'DENSE_UNIFORM_SQRT_FAN_IN','vis_bias_cnst' : 0.01, 'vis_bias_sigma' : hp.choice('vis_bias_sigma', [0.001,0.01,0.1])}]),
+        'vis_apply_l2_decay'      : hp.choice('vis_apply_l2_decay', ['true','false']),
+        'vis_apply_l1_decay'      : hp.choice('vis_apply_l2_decay', ['true','false']),
         'hidden_init_cnst'        : hp.quniform('initial_momentum', 0.0,0.9,0.1),
-        'hidden_bias_init_choice' : hp.choice('hidden_bias_init_choice', [{'hidden_bias_init' : 'DENSE_GAUSSIAN','hidden_bias_cnst' : 0},{'hidden_bias_init' : 'SPARSE_GAUSSIAN','hidden_bias_cnst' : 0},{'hidden_bias_init' : 'CONSTANT','hidden_bias_cnst' : hp.choice('hidden_bias_cnst',[-4,-0.1,0,0.001,0.01,0.1]))},\
-                                                                            {'hidden_bias_init' : 'DENSE_GAUSSIAN_SQRT_FAN_IN','hidden_bias_cnst' : 0},{'hidden_bias_init' : 'DENSE_UNIFORM','hidden_bias_cnst' : 0},{'hidden_bias_init' 'DENSE_UNIFORM_SQRT_FAN_IN','hidden_bias_cnst' : 0}])
+        'hidden_bias_init_choice' : hp.choice('hidden_bias_init_choice', [{'hidden_bias_init' : 'DENSE_GAUSSIAN','hidden_bias_cnst' : 0, 'hidd_bias_sigma' : hp.choice('hidd_bias_sigma', [0.001,0.01,0.1])},{'hidden_bias_init' : 'SPARSE_GAUSSIAN','hidden_bias_cnst' : 0, 'hidd_bias_sigma' : hp.choice('hidd_bias_sigma', [0.001,0.01,0.1])},\
+                                                                            {'hidden_bias_init' : 'CONSTANT','hidden_bias_cnst' : hp.choice('hidden_bias_cnst',[-4,-0.1,0,0.001,0.01,0.1]), 'hidd_bias_sigma' : 0.001},{'hidden_bias_init' : 'DENSE_GAUSSIAN_SQRT_FAN_IN','hidden_bias_cnst' : 0, 'hidd_bias_sigma' : hp.choice('hidd_bias_sigma', [0.001,0.01,0.1])},\
+                                                                            {'hidden_bias_init' : 'DENSE_UNIFORM','hidden_bias_cnst' : 0, 'hidd_bias_sigma' : hp.choice('hidd_bias_sigma', [0.001,0.01,0.1])},{'hidden_bias_init' 'DENSE_UNIFORM_SQRT_FAN_IN','hidden_bias_cnst' : 0, 'hidd_bias_sigma' : hp.choice('hidd_bias_sigma', [0.001,0.01,0.1])}])
         'hidden_dims'             : hp.choice('hidden_dims',[6,40,64,128]),
-        'hidd_apply_l2_decay'     : hp.choice('hidd_apply_l2_decay' : ['true','false']),
-        'hidd_apply_l1_decay'     : hp.choice('hidd_apply_l1_decay' : ['true','false']),
+        'hidd_apply_l2_decay'     : hp.choice('hidd_apply_l2_decay', ['true','false']),
+        'hidd_apply_l1_decay'     : hp.choice('hidd_apply_l1_decay', ['true','false']),
         'wt_init_choice'          : hp.choice('wt_init_choice', [{'wt_init' : 'DENSE_GAUSSIAN','wt_cnst' : 0.01, 'wt_sigma' : hp.choice('wt_sigma', [0.001,0.01,0.1])},{'wt_init' : 'SPARSE_GAUSSIAN','wt_cnst' : 0.01, 'wt_sigma' : hp.choice('wt_sigma', [0.001,0.01,0.1])},\
                                                                     {'wt_init' : 'CONSTANT','wt_cnst' : hp.choice('wt_cnst',[-4,-0.1,0,0.001,0.01,0.1]))}, 'wt_sigma' : 0.001,{'wt_init' : 'DENSE_GAUSSIAN_SQRT_FAN_IN','wt_cnst' : 0.01, 'wt_sigma' : hp.choice('wt_sigma', [0.001,0.01,0.1])},\
                                                                     {'wt_init' : 'DENSE_UNIFORM','wt_cnst' : 0.01, 'wt_sigma' : hp.choice('wt_sigma', [0.001,0.01,0.1])},{'wt_init' : 'DENSE_UNIFORM_SQRT_FAN_IN','wt_cnst' : 0.01, 'wt_sigma' : hp.choice('wt_sigma', [0.001,0.01,0.1])}]),
     }
 
     # add sigma to vis/hidden bias init
-    # scale the data! 
+    # scale the data!
 
     trials = Trials()
     best = fmin(objective,
