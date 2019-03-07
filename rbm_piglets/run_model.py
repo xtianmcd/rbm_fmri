@@ -90,8 +90,9 @@ def objective(params):
         \tdirected: false\n\
         \tparam {{\n\
             \t\tname: 'weight'\n\
-            \t\tinitialization: {params['wt_init']}} \n\
-            \t\tsigma : {params['wt_sigma']}\n\
+            \t\tinitialization: {params['wt_init_choice']['wt_init']}} \n\
+            \t\tconstant: {params['wt_init_choice'][wt_cnst]}\n\
+            \t\tsigma : {params['wt_init_choice']['wt_sigma']}\n\
         \t}\n\
     }".format(,,,,,,,,,,,,,,,,,,,,,,,)\
     )
@@ -141,27 +142,29 @@ if __name__ == '__main__':
         'start_step_up_cd_after'  : hp.choice('start_step_up_cd_after', [50,500,1000,5000,10000,50000]),
         'step_up_cd_after'        : hp.choice('step_up_cd_after', [50,500,1000,5000,10000,50000]),
         'train_data'              : train_data,
-        'vis_bias_init_choice'    : hp.choice('vis_bias_init_choice', [{'vis_bias_init' : 'DENSE_GAUSSIAN','vis_bias_cnst' : 0.1},{'vis_bias_init' : 'SPARSE_GAUSSIAN','vis_bias_cnst' : 0.1},{'vis_bias_init' : 'CONSTANT','vis_bias_cnst' : hp.quniform('vis_bias_cnst',0.0,0.9,0.1))},\
-                                                                        {'vis_bias_init' : 'DENSE_GAUSSIAN_SQRT_FAN_IN','vis_bias_cnst' : 0.1},{'vis_bias_init' : 'DENSE_UNIFORM','vis_bias_cnst' : 0.1},{'vis_bias_init' : DENSE_UNIFORM_SQRT_FAN_IN','vis_bias_cnst' : 0.1}]),
+        'vis_bias_init_choice'    : hp.choice('vis_bias_init_choice', [{'vis_bias_init' : 'DENSE_GAUSSIAN','vis_bias_cnst' : 0.01},{'vis_bias_init' : 'SPARSE_GAUSSIAN','vis_bias_cnst' : 0.01},{'vis_bias_init' : 'CONSTANT','vis_bias_cnst' : hp.choice('hidden_bias_cnst',[-4,-0.1,0,0.001,0.01,0.1]))},\
+                                                                        {'vis_bias_init' : 'DENSE_GAUSSIAN_SQRT_FAN_IN','vis_bias_cnst' : 0.01},{'vis_bias_init' : 'DENSE_UNIFORM','vis_bias_cnst' : 0.01},{'vis_bias_init' : 'DENSE_UNIFORM_SQRT_FAN_IN','vis_bias_cnst' : 0.01}]),
         'vis_apply_l2_decay'      : hp.choice('vis_apply_l2_decay' : ['true','false']),
         'vis_apply_l1_decay'      : hp.choice('vis_apply_l2_decay' : ['true','false']),
         'hidden_init_cnst'        : hp.quniform('initial_momentum', 0.0,0.9,0.1),
-        'hidden_bias_init_choice' : hp.choice('hidden_bias_init_choice', [{'hidden_bias_init' : 'DENSE_GAUSSIAN','hidden_bias_cnst' : 0},{'hidden_bias_init' : 'SPARSE_GAUSSIAN','hidden_bias_cnst' : 0},{'hidden_bias_init' : 'CONSTANT','hidden_bias_cnst' : hp.choice('hidden_bias_cnst',[-4,0,0.1,0.2,0.5,0.7]))},\
+        'hidden_bias_init_choice' : hp.choice('hidden_bias_init_choice', [{'hidden_bias_init' : 'DENSE_GAUSSIAN','hidden_bias_cnst' : 0},{'hidden_bias_init' : 'SPARSE_GAUSSIAN','hidden_bias_cnst' : 0},{'hidden_bias_init' : 'CONSTANT','hidden_bias_cnst' : hp.choice('hidden_bias_cnst',[-4,-0.1,0,0.001,0.01,0.1]))},\
                                                                             {'hidden_bias_init' : 'DENSE_GAUSSIAN_SQRT_FAN_IN','hidden_bias_cnst' : 0},{'hidden_bias_init' : 'DENSE_UNIFORM','hidden_bias_cnst' : 0},{'hidden_bias_init' 'DENSE_UNIFORM_SQRT_FAN_IN','hidden_bias_cnst' : 0}])
-        'hidden_dims'             : 64,
-        'hidd_apply_l2_decay'     : 'false',
-        'hidd_apply_l1_decay'     : 'true',
-        'wwt_init'                : ,
-        'wt_sigma'                : 1.0
+        'hidden_dims'             : hp.choice('hidden_dims',[6,40,64,128]),
+        'hidd_apply_l2_decay'     : hp.choice('hidd_apply_l2_decay' : ['true','false']),
+        'hidd_apply_l1_decay'     : hp.choice('hidd_apply_l1_decay' : ['true','false']),
+        'wt_init_choice'          : hp.choice('wt_init_choice', [{'wt_init' : 'DENSE_GAUSSIAN','wt_cnst' : 0.01, 'wt_sigma' : hp.choice('wt_sigma', [0.001,0.01,0.1])},{'wt_init' : 'SPARSE_GAUSSIAN','wt_cnst' : 0.01, 'wt_sigma' : hp.choice('wt_sigma', [0.001,0.01,0.1])},\
+                                                                    {'wt_init' : 'CONSTANT','wt_cnst' : hp.choice('wt_cnst',[-4,-0.1,0,0.001,0.01,0.1]))}, 'wt_sigma' : 0.001,{'wt_init' : 'DENSE_GAUSSIAN_SQRT_FAN_IN','wt_cnst' : 0.01, 'wt_sigma' : hp.choice('wt_sigma', [0.001,0.01,0.1])},\
+                                                                    {'wt_init' : 'DENSE_UNIFORM','wt_cnst' : 0.01, 'wt_sigma' : hp.choice('wt_sigma', [0.001,0.01,0.1])},{'wt_init' : 'DENSE_UNIFORM_SQRT_FAN_IN','wt_cnst' : 0.01, 'wt_sigma' : hp.choice('wt_sigma', [0.001,0.01,0.1])}]),
     }
 
-    """
+    # add sigma to vis/hidden bias init
+    # scale the data! 
+
     trials = Trials()
     best = fmin(objective,
             space=space,
             algo=tpe.suggest,
             max_evals=100,
             trials=trials)
-"""
 
 objective(space)
