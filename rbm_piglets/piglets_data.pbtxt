@@ -1,0 +1,10 @@
+name: "rbm_piglets"
+data {
+  name: "piglets_train"
+    file_pattern: "../../data/piglets/Piglets_Group_Dataset.npy"
+      size: 3592
+        dimensions: 20241
+	}
+
+main_memory: "20G"
+gpu_memory:"3G"

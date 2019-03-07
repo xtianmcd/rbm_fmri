@@ -1,0 +1,13 @@
+optimizer: CD
+stopcondition {
+  all_processed: false
+  steps: 65500
+}
+train: true
+batchsize: 8
+data_proto: "./piglets_data.pbtxt"
+eval_after: 500
+checkpoint_after: 65500
+checkpoint_directory: "./output_181220"
+randomize: false
+show_after: 2500
