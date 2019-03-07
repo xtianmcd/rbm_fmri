@@ -1,18 +1,18 @@
 clear all;
 
 %% Load activation maps
-nii=load_untouch_nii('normalize_Smoothed125_ThresZ1_Group_Temporal_GIFTMask_DL_292_Corrected.nii');
+nii=load_untouch_nii('norm/normalize_Smoothed125_ThresZ1_rbm_piglets_weights_reconstructed_Corrected_last.nii');
 header=nii.hdr;
 img=double(nii.img);
 clear nii;
 img(isnan(img))=0;
 
 %% Load RSN atlas
-a=load_untouch_nii('Atlases/Pig_RSN_Atlas.nii');
+a=load_untouch_nii('piglet_analysis/pig_atlas/Pig_RSN_Atlas.nii');
 at=double(a.img);
 
 %% Load Anatomy to create mask
-ma=load_untouch_nii('normalize_Masked_Volume_Corrected.nii');
+ma=load_untouch_nii('piglet_analysis/normalize_Masked_Volume_Corrected.nii');
 anat=double(ma.img);
 mask=anat;
 mask(mask>0)=1;
@@ -54,3 +54,6 @@ for i=1:size(at_totals,1)
     maxs(5,i)=region_totals(i,indr_temp);
     maxs(6,i)=region_per(i,indr_temp);
 end
+
+
+save('statsMaxs.txt','maxs','-ascii','-tabs')

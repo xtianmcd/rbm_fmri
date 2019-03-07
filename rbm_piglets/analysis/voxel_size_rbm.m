@@ -10,7 +10,7 @@ mask=m.img;
 
 % Load activation maps
 % act=load_untouch_nii('Group_Temporal_GIFTMask_DL_292_Lam075.nii');
-act=load_untouch_nii('rbm_piglets_weights_reconstructed.nii');
+act=load_untouch_nii('rpw/rbm_piglets_weights_reconstructed_last.nii');
 
 img=act.img;
 
@@ -80,6 +80,7 @@ act.hdr.dime.dim(5)=size(img,4);
 act.hdr.dime.datatype=16;
 act.hdr.dime.bitpix=32;
 
-save_untouch_nii(act,'Smoothed125_ThresZ1_rbm_piglets_weights_reconstructed_Corrected.nii');
+%save_untouch_nii(act,'Smoothed125_ThresZ1_rbm_piglets_weights_reconstructed_Corrected_{}_{}.nii');
+save_untouch_nii(act,'Smoothed125_ThresZ1_rbm_piglets_weights_reconstructed_Corrected_last.nii');
 
 

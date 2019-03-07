@@ -1,3 +1,4 @@
+import sys
 import nibabel as nib
 import numpy.ma as ma
 import numpy as np
@@ -7,6 +8,9 @@ from deepnet import util
 # You may or may not need to use the second line, as it is just a transpose. I'm not sure of the format of your result.
 #alpha_lasso=np.load('../../Output/3/DL_1000/3_100_0.15_alpha.npy')
 #squished_embeddings=alpha_lasso.T
+
+hp_str = sys.argv[1]
+date_str = sys.argv[2]
 
 model = util.ReadModel('./output_181220/piglets_rbm_layer1_LAST')
 params = {}
@@ -40,5 +44,6 @@ img = nib.Nifti1Image(spatial_map, np.eye(4))
 print("filled spatial_map shape {}".format(img.shape))
 
 print("\n...")
-nib.save(img, './rbm_piglets_weights_reconstructed.nii')
+nib.save(img, './rpw/rbm_piglets_weights_reconstructed_{}_{}.nii'.format(hp_str,date_str))
+nib.save(img, './rpw/rbm_piglets_weights_reconstructed_last.nii')
 print("image saved. exiting script.")
