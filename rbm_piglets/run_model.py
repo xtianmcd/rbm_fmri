@@ -2,6 +2,7 @@ import subprocess
 import datetime
 import pandas as pd
 from hyperopt import fmin, tpe, hp, STATUS_OK, Trials
+from tabulate import tabulate
 
 def bash_cmd(cmd):
     process = subprocess.Popen(cmd.split(), stdout=subprocess.PIPE)
@@ -112,18 +113,24 @@ def objective(params):
     #    maxs[0]=stats.read()
     maxs= pd.read_csv('statsMaxs.txt',sep='\t',header=None)
     corrs = maxs.iloc[1]
+    avg_corr = np.mean(corrs)
 
-    """
-    **** need to use `corrs` as the objective measure to maximize;
-    **** possible to save the hp's for the max of each?
-    **** should use some composite among all corrs for measure?
-    **** next, need to define the ranes for all the parameters (I think in space)
-    """
+    # tab_results = tabulate(results, headers="keys", tablefmt="fancy_grid", floatfmt=".8f")
+    # weights = model.get_weights()
+    # # print(weights)
+    # with open('../../output/hp_opt/weights.txt', 'a+') as model_summ:
+    #     model_summ.write("model: {}\n\tweights:\n{}\n\tmodel_details:\n{}\n\tscore:\t{}".format(model, list(weights), tab_results, acc))
+    #
+
+    model_loss = 1-avg_corr
+
+    with open('params_loss.txt','a') as params_loss:
+        params_loss.write(f'Parameters: {params}\nLoss: {model_loss}\n\n')
 
 
-    model_loss = float(output.split(':')[-1])
     print("model_loss = {}".format(model_loss))
-    return model_loss
+
+    return params,model_loss
 
 if __name__ == '__main__':
 
@@ -161,8 +168,7 @@ if __name__ == '__main__':
                                                                     {'wt_init' : 'DENSE_UNIFORM','wt_cnst' : 0.01, 'wt_sigma' : hp.choice('wt_sigma', [0.001,0.01,0.1])},{'wt_init' : 'DENSE_UNIFORM_SQRT_FAN_IN','wt_cnst' : 0.01, 'wt_sigma' : hp.choice('wt_sigma', [0.001,0.01,0.1])}]),
     }
 
-    # add sigma to vis/hidden bias init
-    # scale the data!
+    # SCALE THE DATA!
 
     trials = Trials()
     best = fmin(objective,
@@ -171,4 +177,4 @@ if __name__ == '__main__':
             max_evals=100,
             trials=trials)
 
-objective(space)
+    # objective(space)    
